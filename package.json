@@ -1,0 +1,42 @@
+{
+  "name": "modeller",
+  "version": "0.1.0",
+  "description": "Knex backed, Javascript based ORM",
+  "main": "index.js",
+  "scripts": {
+    "test": "find ./spec -name '*.spec.js' | xargs nyc mocha --exit -R spec",
+    "coverage": "nyc report --reporter=text"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oghdev/modeller.git"
+  },
+  "author": "Dominic Porteous <dominic@dombox.xyz>",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/oghdev/modeller/issues"
+  },
+  "homepage": "https://github.com/oghdev/modeller#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "uuid": "^8.2.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^6.5.1",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "knex": "^0.21.1",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "random-number": "^0.0.9",
+    "randomatic": "^3.1.1",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0",
+    "sqlite3": "^5.0.0"
+  }
+}

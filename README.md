@@ -1,2 +1,2 @@
 # modeller
-Knex based, Javascript ORM
+Knex backed, Javascript based ORM
