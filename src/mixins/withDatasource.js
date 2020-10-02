@@ -94,7 +94,7 @@ const withDatasource = (Model, datasource) => {
 
     _createField (key) {
 
-      if (this[key]) {
+      if (Object.prototype.hasOwnProperty.call(this, key)) {
 
         return
 
