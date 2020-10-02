@@ -20,6 +20,7 @@ const modelBuilder = function modelBuilder (model) {
     withSchema: (schema) => modelBuilder(withSchema(model, schema)),
     extendSchema: (mixin) => modelBuilder(extendSchema(model, mixin)),
     withTimestamps: (relations) => modelBuilder(withTimestamps(model)),
+    useMixin: (mixin, ...args) => modelBuilder(mixin(model, ...args)),
     finalise: () => storeModel(model)
   }
 
