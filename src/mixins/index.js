@@ -1,11 +1,12 @@
-const extendSchema = require('./extendSchema')
 const withDatasource = require('./withDatasource')
 const withSchema = require('./withSchema')
 const withTimestamps = require('./withTimestamps')
 
+const extendSchema = require('./extendSchema')
+
 module.exports = {
-  extendSchema,
   withDatasource,
   withSchema,
-  withTimestamps
+  withTimestamps,
+  extendSchema
 }
