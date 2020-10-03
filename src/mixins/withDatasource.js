@@ -265,11 +265,11 @@ const withDatasource = (Model, datasource) => {
 
     }
 
-    static async build (data) {
+    static async build (data, opts) {
 
       const Model = this
 
-      const instance = new Model(data)
+      const instance = new Model(data, opts)
 
       return instance.save()
 
