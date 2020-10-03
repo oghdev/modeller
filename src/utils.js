@@ -22,7 +22,7 @@ const transformData = (schema, data) => {
 
       return Object.assign(acc, { [key]: value ? 1 : 0 })
 
-    } else if (type === 'object' || type === 'array') {
+    } else if ((type === 'object' || type === 'array') && typeof value !== 'string') {
 
       return Object.assign(acc, { [key]: JSON.stringify(value) })
 
@@ -59,6 +59,10 @@ const untransformData = (schema, data) => {
     if (type === 'boolean') {
 
       return Object.assign(acc, { [key]: value === 1 || value === '1' })
+
+    } else if ((type === 'object' || type === 'array') && typeof value !== 'object') {
+
+      return Object.assign(acc, { [key]: JSON.parse(value) })
 
     } else {
 
