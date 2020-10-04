@@ -22,9 +22,13 @@ const transformData = (schema, data) => {
 
       return Object.assign(acc, { [key]: value ? 1 : 0 })
 
-    } else if ((type === 'object' || type === 'array') && typeof value !== 'string') {
+    } else if (type === 'object' && typeof value !== 'string') {
 
-      return Object.assign(acc, { [key]: JSON.stringify(value) })
+      return Object.assign(acc, { [key]: value ? JSON.stringify(value) : '{}' })
+
+    } else if (type === 'array' && typeof value !== 'string') {
+
+      return Object.assign(acc, { [key]: value ? JSON.stringify(value) : '[]' })
 
     } else {
 
@@ -60,9 +64,13 @@ const untransformData = (schema, data) => {
 
       return Object.assign(acc, { [key]: value === 1 || value === '1' })
 
-    } else if ((type === 'object' || type === 'array') && typeof value !== 'object') {
+    } else if (type === 'object' && typeof value !== 'object') {
 
-      return Object.assign(acc, { [key]: JSON.parse(value) })
+      return Object.assign(acc, { [key]: value ? JSON.parse(value) : {} })
+
+    } else if (type === 'array' && typeof value !== 'object') {
+
+      return Object.assign(acc, { [key]: value ? JSON.parse(value) : [] })
 
     } else {
 
