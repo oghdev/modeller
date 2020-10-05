@@ -30,6 +30,10 @@ const transformData = (schema, data) => {
 
       return Object.assign(acc, { [key]: value ? JSON.stringify(value) : '[]' })
 
+    } else if (type === 'date' && value instanceof Date) {
+
+      return Object.assign(acc, { [key]: value.getTime() })
+
     } else {
 
       return Object.assign(acc, { [key]: value })
@@ -71,6 +75,10 @@ const untransformData = (schema, data) => {
     } else if (type === 'array' && typeof value !== 'object') {
 
       return Object.assign(acc, { [key]: value ? JSON.parse(value) : [] })
+
+    } else if (type === 'date' && typeof value === 'number') {
+
+      return Object.assign(acc, { [key]: value ? new Date(value) : undefined })
 
     } else {
 
