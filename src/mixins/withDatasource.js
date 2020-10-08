@@ -114,6 +114,7 @@ const withDatasource = (Model, datasource) => {
         key,
         {
           enumerable: true,
+          configurable: true,
           get: fieldGetter,
           set: fieldSetter
         }
@@ -157,7 +158,9 @@ const withDatasource = (Model, datasource) => {
 
     }
 
-    async update (data) {
+    async update (data, opts) {
+
+      opts = opts || {}
 
       const newData = Object.assign(
         {}, this._data, data
@@ -172,18 +175,20 @@ const withDatasource = (Model, datasource) => {
         }
       )
 
-      return this.save()
+      return this.save(opts)
 
     }
 
-    async save () {
+    async save (opts) {
+
+      opts = opts || {}
 
       const Model = this.constructor
       const instance = this
 
       const isNewInstance = this._newInstance
 
-      const ctx = { instance, isNewInstance }
+      const ctx = { instance, isNewInstance, opts }
 
       if (Model.beforeUpdate && !isNewInstance) {
 
@@ -197,16 +202,23 @@ const withDatasource = (Model, datasource) => {
 
       const data = transformData(this.schema, this._data)
 
-      if (this._newInstance) {
+      const query = this._newInstance
+        ? this.query().insert(data)
+        : this.query().where({ id: this.id }).update(data)
 
-        await this.query()
-          .insert(data)
+      ctx.query = query
 
-      } else {
+      if (Model.beforeQuery) {
 
-        await this.query()
-          .where({ id: this.id })
-          .update(data)
+        await Model.beforeQuery(ctx)
+
+      }
+
+      await ctx.query
+
+      if (Model.afterQuery) {
+
+        await Model.afterQuery(ctx)
 
       }
 
@@ -230,7 +242,9 @@ const withDatasource = (Model, datasource) => {
 
     }
 
-    async remove () {
+    async remove (opts) {
+
+      opts = opts || {}
 
       const Model = this.constructor
       const instance = this
@@ -245,9 +259,23 @@ const withDatasource = (Model, datasource) => {
 
       await this.transaction(async (tx) => {
 
-        await tx
-          .where('id', this.id)
-          .del()
+        const query = tx.where('id', this.id).del()
+
+        ctx.query = query
+
+        if (Model.beforeQuery) {
+
+          await Model.beforeQuery(ctx)
+
+        }
+
+        await ctx.query
+
+        if (Model.afterQuery) {
+
+          await Model.afterQuery(ctx)
+
+        }
 
         if (Model.afterRemove) {
 
@@ -267,22 +295,28 @@ const withDatasource = (Model, datasource) => {
 
     static async build (data, opts) {
 
+      opts = opts || {}
+
       const Model = this
 
       const instance = new Model(data, opts)
 
-      return instance.save()
+      return instance.save(opts)
 
     }
 
-    static async upsert (query, data) {
+    static async upsert (
+      where, data, opts
+    ) {
 
-      const existing = await this.one(query)
+      opts = opts || {}
+
+      const existing = await this.one(where, opts)
 
       if (!existing) {
 
         return this.build(Object.assign(
-          {}, query, data
+          {}, where, data
         ))
 
       }
@@ -291,7 +325,11 @@ const withDatasource = (Model, datasource) => {
 
     }
 
-    static async id (id) {
+    static async id (id, opts) {
+
+      opts = opts || {}
+
+      const Model = this
 
       if (!id) {
 
@@ -299,9 +337,23 @@ const withDatasource = (Model, datasource) => {
 
       }
 
-      const res = await this.query()
-        .where({ id })
-        .first()
+      const query = Model.query().where({ id }).first()
+
+      const ctx = { query, opts }
+
+      if (Model.beforeQuery) {
+
+        await Model.beforeQuery(ctx)
+
+      }
+
+      const res = await ctx.query
+
+      if (Model.afterQuery) {
+
+        await Model.afterQuery(ctx)
+
+      }
 
       if (!res) {
 
@@ -309,18 +361,27 @@ const withDatasource = (Model, datasource) => {
 
       }
 
-      const Model = this
-
       return new Model(res, { newInstance: false })
 
     }
 
-    static async find (query) {
+    static async find (where, opts) {
+
+      opts = opts || {}
 
       const Model = this
 
-      const res = await this.query()
-        .where(query)
+      const query = Model.query().where(where)
+
+      const ctx = { query, opts }
+
+      if (Model.beforeQuery) {
+
+        await Model.beforeQuery(ctx)
+
+      }
+
+      const res = await ctx.query
         .then((res) => {
 
           if (!res) {
@@ -334,17 +395,45 @@ const withDatasource = (Model, datasource) => {
 
         })
 
+      if (Model.afterQuery) {
+
+        await Model.afterQuery(ctx)
+
+      }
+
       return res
 
     }
 
-    static async one (query) {
+    static async one (where, opts) {
+
+      if (!where) {
+
+        throw new Error('Query not provided')
+
+      }
+
+      opts = opts || {}
 
       const Model = this
 
-      const res = await this.query()
-        .where(query)
-        .first()
+      const query = Model.query().where(where).first()
+
+      const ctx = { query, opts }
+
+      if (Model.beforeQuery) {
+
+        await Model.beforeQuery(ctx)
+
+      }
+
+      const res = await ctx.query
+
+      if (Model.afterQuery) {
+
+        await Model.afterQuery(ctx)
+
+      }
 
       if (!res) {
 
@@ -356,34 +445,71 @@ const withDatasource = (Model, datasource) => {
 
     }
 
-    static all () {
+    static async all (opts) {
+
+      opts = opts || {}
 
       const Model = this
 
-      return this.query()
-        .select('*')
-        .then((res) => {
+      const query = Model.query().select('*')
 
-          if (!res) {
+      const ctx = { query, opts }
 
-            return []
+      if (Model.beforeQuery) {
 
-          }
+        await Model.beforeQuery(ctx)
 
-          return res
-            .map((data) => new Model(data, { newInstance: false }))
+      }
 
-        })
+      const res = await ctx.query.then((res) => {
+
+        if (!res) {
+
+          return []
+
+        }
+
+        return res
+          .map((data) => new Model(data, { newInstance: false }))
+
+      })
+
+      if (Model.afterQuery) {
+
+        await Model.afterQuery(ctx)
+
+      }
+
+      return res
 
     }
 
-    static count (query) {
+    static async count (where, opts) {
 
-      query = query || {}
+      where = where || {}
+      opts = opts || {}
 
-      return this.query()
-        .where(query)
-        .then((res) => res ? res.length || 0 : 0)
+      const Model = this
+
+      const query = Model.query().where(where)
+
+      const ctx = { query, opts }
+
+      if (Model.beforeQuery) {
+
+        await Model.beforeQuery(ctx)
+
+      }
+
+      const res = await ctx.query.then((res) => res ? res.length || 0 : 0)
+
+      if (Model.afterQuery) {
+
+        await Model.afterQuery(ctx)
+
+      }
+
+      return res
 
     }
 
