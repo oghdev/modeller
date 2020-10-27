@@ -295,7 +295,7 @@ const withDatasource = (Model, datasource) => {
 
     static async build (data, opts) {
 
-      opts = opts || {}
+      opts = Object.assign({ newInstance: true }, opts || {})
 
       const Model = this
 
@@ -327,7 +327,7 @@ const withDatasource = (Model, datasource) => {
 
     static async id (id, opts) {
 
-      opts = opts || {}
+      opts = Object.assign({ newInstance: false }, opts || {})
 
       const Model = this
 
@@ -361,13 +361,13 @@ const withDatasource = (Model, datasource) => {
 
       }
 
-      return new Model(res, { newInstance: false })
+      return new Model(res, opts)
 
     }
 
     static async find (where, opts) {
 
-      opts = opts || {}
+      opts = Object.assign({ newInstance: false }, opts || {})
 
       const Model = this
 
@@ -391,7 +391,7 @@ const withDatasource = (Model, datasource) => {
           }
 
           return res
-            .map((data) => new Model(data, { newInstance: false }))
+            .map((data) => new Model(data, opts))
 
         })
 
@@ -413,7 +413,7 @@ const withDatasource = (Model, datasource) => {
 
       }
 
-      opts = opts || {}
+      opts = Object.assign({ newInstance: false }, opts || {})
 
       const Model = this
 
@@ -441,13 +441,13 @@ const withDatasource = (Model, datasource) => {
 
       }
 
-      return new Model(res, { newInstance: false })
+      return new Model(res, opts)
 
     }
 
     static async all (opts) {
 
-      opts = opts || {}
+      opts = Object.assign({ newInstance: false }, opts || {})
 
       const Model = this
 
@@ -470,7 +470,7 @@ const withDatasource = (Model, datasource) => {
         }
 
         return res
-          .map((data) => new Model(data, { newInstance: false }))
+          .map((data) => new Model(data, opts))
 
       })
 
@@ -513,7 +513,9 @@ const withDatasource = (Model, datasource) => {
 
     }
 
-    static queryBuilder (fn) {
+    static queryBuilder (fn, opts) {
+
+      opts = Object.assign({ newInstance: false }, opts || {})
 
       const Model = this
 
@@ -530,11 +532,11 @@ const withDatasource = (Model, datasource) => {
           if (Array.isArray(res)) {
 
             return res
-              .map((data) => new Model(data, { newInstance: false }))
+              .map((data) => new Model(data, opts))
 
           }
 
-          return new Model(Object.assign({}, res), { newInstance: false })
+          return new Model(Object.assign({}, res), opts)
 
         })
 
