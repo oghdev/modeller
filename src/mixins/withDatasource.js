@@ -206,7 +206,9 @@ const withDatasource = (Model, datasource) => {
         ? this.query().insert(data)
         : this.query().where({ id: this.id }).update(data)
 
-      ctx.query = query
+      Object.defineProperty(
+        ctx, 'query', { value: query, enumerable: false, writeable: true }
+      )
 
       if (Model.beforeQuery) {
 
@@ -261,7 +263,9 @@ const withDatasource = (Model, datasource) => {
 
         const query = tx.where('id', this.id).del()
 
-        ctx.query = query
+        Object.defineProperty(
+          ctx, 'query', { value: query, enumerable: false, writeable: true }
+        )
 
         if (Model.beforeQuery) {
 
