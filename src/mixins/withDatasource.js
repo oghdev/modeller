@@ -188,7 +188,7 @@ const withDatasource = (Model, datasource) => {
 
       const isNewInstance = this._newInstance
 
-      const ctx = { instance, isNewInstance, opts }
+      const ctx = { Model, instance, isNewInstance, opts }
 
       if (Model.beforeUpdate && !isNewInstance) {
 
@@ -251,7 +251,7 @@ const withDatasource = (Model, datasource) => {
       const Model = this.constructor
       const instance = this
 
-      const ctx = { instance }
+      const ctx = { Model, instance }
 
       if (Model.beforeRemove) {
 
@@ -343,7 +343,7 @@ const withDatasource = (Model, datasource) => {
 
       const query = Model.query().where({ id }).first()
 
-      const ctx = { query, opts }
+      const ctx = { Model, query, opts }
 
       if (Model.beforeQuery) {
 
@@ -377,7 +377,7 @@ const withDatasource = (Model, datasource) => {
 
       const query = Model.query().where(where)
 
-      const ctx = { query, opts }
+      const ctx = { Model, query, opts }
 
       if (Model.beforeQuery) {
 
@@ -423,7 +423,7 @@ const withDatasource = (Model, datasource) => {
 
       const query = Model.query().where(where).first()
 
-      const ctx = { query, opts }
+      const ctx = { Model, query, opts }
 
       if (Model.beforeQuery) {
 
@@ -457,7 +457,7 @@ const withDatasource = (Model, datasource) => {
 
       const query = Model.query().select('*')
 
-      const ctx = { query, opts }
+      const ctx = { Model, query, opts }
 
       if (Model.beforeQuery) {
 
@@ -497,7 +497,7 @@ const withDatasource = (Model, datasource) => {
 
       const query = Model.query().where(where)
 
-      const ctx = { query, opts }
+      const ctx = { Model, query, opts }
 
       if (Model.beforeQuery) {
 
@@ -543,6 +543,16 @@ const withDatasource = (Model, datasource) => {
           return new Model(Object.assign({}, res), opts)
 
         })
+
+    }
+
+    static toJSON () {
+
+      const name = this.name
+
+      return {
+        name
+      }
 
     }
 
