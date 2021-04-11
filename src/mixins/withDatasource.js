@@ -1,8 +1,10 @@
 const { transformData, untransformData } = require('../utils')
 
-const withDatasource = (Model, datasource) => {
+const withDatasource = (
+  Model, datasource, tableName
+) => {
 
-  const table = Model.name
+  const table = tableName || Model.name
 
   return class extends Model {
 
