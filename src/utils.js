@@ -1,10 +1,14 @@
-const transformData = (schema, data) => {
+const transformData = (
+  schema, data, opts
+) => {
 
   if (!schema) {
 
     return data
 
   }
+
+  opts = Object.assign({ preserveDates: true }, opts || {})
 
   const fields = schema.describe().keys
 
@@ -30,7 +34,7 @@ const transformData = (schema, data) => {
 
       return Object.assign(acc, { [key]: value ? JSON.stringify(value) : '[]' })
 
-    } else if (type === 'date' && value instanceof Date) {
+    } else if (type === 'date' && value instanceof Date && !opts.preserveDates) {
 
       return Object.assign(acc, { [key]: value.getTime() })
 

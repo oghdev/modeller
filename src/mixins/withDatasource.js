@@ -23,7 +23,9 @@ const withDatasource = (
 
       if (this.schema) {
 
-        data = untransformData(this.schema, data)
+        data = untransformData(
+          this.schema, data, opts
+        )
 
       }
 
@@ -202,7 +204,9 @@ const withDatasource = (
 
       }
 
-      const data = transformData(this.schema, this._data)
+      const data = transformData(
+        this.schema, this._data, opts
+      )
 
       const query = this._newInstance
         ? this.query().insert(data)
