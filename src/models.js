@@ -13,16 +13,41 @@ const storeModel = (model) => {
 
 }
 
-const modelBuilder = function modelBuilder (model) {
+const useMixin = (
+  mixin, model, ...args
+) => {
+
+  const name = model.name
+  const newModel = mixin(model, ...args)
+
+  newModel.name = name
+
+  Object.defineProperty(
+    newModel, 'name', { value: name, writeable: false, configurable: true }
+  )
+
+  return newModel
+
+}
+
+const modelBuilder = (model) => {
 
   return {
-    withDatasource: (datasource, tableName) => modelBuilder(withDatasource(
-      model, datasource, tableName
+    useMixin: (mixin, ...args) => modelBuilder(useMixin(
+      mixin, model, ...args
     )),
-    withSchema: (schema) => modelBuilder(withSchema(model, schema)),
-    extendSchema: (mixin) => modelBuilder(extendSchema(model, mixin)),
-    withTimestamps: (relations) => modelBuilder(withTimestamps(model)),
-    useMixin: (mixin, ...args) => modelBuilder(mixin(model, ...args)),
+    withDatasource: (...args) => modelBuilder(useMixin(
+      withDatasource, model, ...args
+    )),
+    withSchema: (...args) => modelBuilder(useMixin(
+      withSchema, model, ...args
+    )),
+    extendSchema: (...args) => modelBuilder(useMixin(
+      extendSchema, model, ...args
+    )),
+    withTimestamps: (...args) => modelBuilder(useMixin(
+      withTimestamps, model, ...args
+    )),
     finalise: () => storeModel(model)
   }
 
