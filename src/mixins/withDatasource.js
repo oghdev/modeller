@@ -556,9 +556,7 @@ const withDatasource = (
 
       const name = this.name
 
-      return {
-        name
-      }
+      return { name }
 
     }
 

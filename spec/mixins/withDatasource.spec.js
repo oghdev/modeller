@@ -211,6 +211,23 @@ describe('mixins/withDatasource.js', async () => {
 
       beforeEach(() => Model.all().then((res) => res.map((m) => m.remove())))
 
+      it('should remove instance', async () => {
+
+        const HookModel = getHookModel()
+
+        const id = uuid()
+
+        const instance = await HookModel.build({ id })
+
+        await instance.remove()
+
+        const promise = HookModel.id(id)
+
+        // eslint-disable-next-line no-unused-expressions
+        chai.expect(promise).to.eventually.be.rejected
+
+      })
+
       describe('hooks', async () => {
 
         it('should call beforeRemove hook once', async () => {

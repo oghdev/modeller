@@ -16,7 +16,9 @@ const storeModel = (model) => {
 const modelBuilder = function modelBuilder (model) {
 
   return {
-    withDatasource: (datasource) => modelBuilder(withDatasource(model, datasource)),
+    withDatasource: (datasource, tableName) => modelBuilder(withDatasource(
+      model, datasource, tableName
+    )),
     withSchema: (schema) => modelBuilder(withSchema(model, schema)),
     extendSchema: (mixin) => modelBuilder(extendSchema(model, mixin)),
     withTimestamps: (relations) => modelBuilder(withTimestamps(model)),
