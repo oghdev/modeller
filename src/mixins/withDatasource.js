@@ -142,7 +142,7 @@ const withDatasource = (
 
       const trx = await datasource.transaction()
 
-      const ctx = trx(table)
+      const ctx = this.query().transacting(trx)
 
       await fn(ctx)
         .then(trx.commit)
@@ -154,7 +154,7 @@ const withDatasource = (
 
       const trx = await datasource.transaction()
 
-      const ctx = trx(table)
+      const ctx = this.query().transacting(trx)
 
       await fn(ctx)
         .then(trx.commit)
@@ -267,7 +267,9 @@ const withDatasource = (
 
       await this.transaction(async (tx) => {
 
-        const query = tx.where('id', this.id).del()
+        const query = tx
+          .where('id', this.id)
+          .del()
 
         Object.defineProperty(
           ctx, 'query', { value: query, enumerable: false, writeable: true }
