@@ -2,6 +2,7 @@ const withDatasource = require('./mixins/withDatasource')
 const withSchema = require('./mixins/withSchema')
 const extendSchema = require('./mixins/extendSchema')
 const withTimestamps = require('./mixins/withTimestamps')
+const withPhantomId = require('./mixins/withPhantomId')
 
 const models = {}
 
@@ -47,6 +48,9 @@ const modelBuilder = (model) => {
     )),
     withTimestamps: (...args) => modelBuilder(useMixin(
       withTimestamps, model, ...args
+    )),
+    withPhantomId: (...args) => modelBuilder(useMixin(
+      withPhantomId, model, ...args
     )),
     finalise: () => storeModel(model)
   }

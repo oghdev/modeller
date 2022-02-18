@@ -8,9 +8,49 @@ const withDatasource = (
 
   return class extends Model {
 
+    static transformData (
+      schema, data, opts
+    ) {
+
+      return transformData(
+        schema, data, opts
+      )
+
+    }
+
+    static untransformData (
+      schema, data, opts
+    ) {
+
+      return untransformData(
+        schema, data, opts
+      )
+
+    }
+
     static get datasource () {
 
       return datasource
+
+    }
+
+    untransformData (
+      schema, data, opts
+    ) {
+
+      return this.constructor.untransformData(
+        schema, data, opts
+      )
+
+    }
+
+    transformData (
+      schema, data, opts
+    ) {
+
+      return this.constructor.transformData(
+        schema, data, opts
+      )
 
     }
 
@@ -23,7 +63,7 @@ const withDatasource = (
 
       if (this.schema) {
 
-        data = untransformData(
+        data = this.untransformData(
           this.schema, data, opts
         )
 
@@ -33,7 +73,7 @@ const withDatasource = (
         this,
         '_origData',
         {
-          value: data,
+          value: Object.assign({}, data),
           enumerable: false,
           writeable: false
         }
@@ -204,7 +244,7 @@ const withDatasource = (
 
       }
 
-      const data = transformData(
+      const data = Model.transformData(
         this.schema, this._data, opts
       )
 
